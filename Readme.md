@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url]
 
 * Студент: [Светлана Строгонова](https://up.htmlacademy.ru/javascript/18/user/1006587).
-* Наставник: `Неизвестно`.
+* Наставник: [Вадим Двухжилов](https://htmlacademy.ru/profile/vdvukhzhilov).
 
 ---
 
