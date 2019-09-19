@@ -4,55 +4,49 @@ var COMMENTS = ['Всё отлично!', 'В целом всё неплохо. 
 var DESCRIPTION = ['Отдыхали как могли!', 'Отдыхать - не работать)))', 'Новый опыт, новые ощущения', 'Это просто праздник!)', 'Приключения - наше все!!', 'Всё отлично!', 'Just VAU!!!', 'Отдых - он такой)'];
 var NAMES = ['Иван', 'Антон', 'Мария', 'Ксюша', 'Виктор', 'Юлия', 'Лолита', 'Вахтанг'];
 
-// генерация адресов картинок
-
-function generateArrayRandomNumber(min, max) {
-  var totalNumbers = max - min + 1;
-  var arrayTotalNumbers = [];
-  var arrayRandomNumbers = [];
-  var tempRandomNumber;
-  while (totalNumbers--) {
-    arrayTotalNumbers.push(totalNumbers + min);
-  }
-  while (arrayTotalNumbers.length) {
-    tempRandomNumber = Math.round(Math.random() * (arrayTotalNumbers.length - 1));
-    arrayRandomNumbers.push(arrayTotalNumbers[tempRandomNumber]);
-    arrayTotalNumbers.splice(tempRandomNumber, 1);
-  }
-  return arrayRandomNumbers;
-}
-
-var N = generateArrayRandomNumber(1, 25);
-
 // генерация случайного целого числа
 
 function getRandomInRange(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// генерация случайных данных
+// генерация случайного комментария
+
+var getRandomComment = function () {
+  var Comment = {
+    avatar: 'img/avatar-' + getRandomInRange(1, 6) + '.svg',
+    message: COMMENTS[getRandomInRange(0, (COMMENTS.length - 1))],
+    name: NAMES[getRandomInRange(0, (NAMES.length - 1))]
+  };
+
+  return Comment;
+};
+
+// генерация массива случайных комментариев
+
+var getCommentsRandomList = function (comment) {
+  var HowMuchComments = getRandomInRange(1, 5);
+  var CommentsList = [];
+
+  for (var i = 0; i < HowMuchComments; i++) {
+    CommentsList.push(getRandomComment(comment));
+  }
+
+  return CommentsList;
+};
+
+// генерация объекта с описанием фотографии
 
 var getPhotoDescription = function (i) {
   var PhotoDescription = {
-    url: 'photos/' + N[i] + '.jpg',
-    description: DESCRIPTION[Math.floor((Math.random() * DESCRIPTION.length))],
+    url: 'photos/' + (i + 1) + '.jpg',
+    description: DESCRIPTION[getRandomInRange(0, (DESCRIPTION.length - 1))],
     likes: getRandomInRange(15, 200),
-    comments: {
-      avatar: 'img/avatar-' + getRandomInRange(1, 6) + '.svg',
-      message: COMMENTS[Math.floor((Math.random() * COMMENTS.length))],
-      name: NAMES[Math.floor((Math.random() * NAMES.length))]
-    }
+    comments: getCommentsRandomList(getRandomComment())
   };
 
   return PhotoDescription;
 };
-
-// заполнение массива случайными данными
-
-for (var i = 0; i < N.length; i++) {
-  var photos = Array;
-  photos[i] = getPhotoDescription(i);
-}
 
 // создание DOM-элемента
 
@@ -65,7 +59,7 @@ var renderPhoto = function (photo) {
 
   image.src = photo.url;
   image.alt = photo.description;
-  photoElement.querySelector('.picture__comments').textContent = photo.comments;
+  photoElement.querySelector('.picture__comments').textContent = photo.comments.length;
   photoElement.querySelector('.picture__likes').textContent = photo.likes;
 
   return photoElement;
@@ -73,8 +67,8 @@ var renderPhoto = function (photo) {
 
 var fragment = document.createDocumentFragment();
 
-for (i = 0; i < N.length; i++) {
-  fragment.appendChild(renderPhoto(photos[i]));
+for (var i = 0; i < 25; i++) {
+  fragment.appendChild(renderPhoto(getPhotoDescription(i)));
 }
 photosList.appendChild(fragment);
 
