@@ -1,56 +1,59 @@
 'use strict';
 
 var COMMENTS = ['Всё отлично!', 'В целом всё неплохо. Но не всё.', 'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.', 'Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.', 'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.', 'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'];
-var DESCRIPTION = ['Отдыхали как могли!', 'Отдыхать - не работать)))', 'Новый опыт, новые ощущения', 'Это просто праздник!)', 'Приключения - наше все!!', 'Всё отлично!', 'Just VAU!!!', 'Отдых - он такой)'];
+var DESCRIPTIONS = ['Отдыхали как могли!', 'Отдыхать - не работать)))', 'Новый опыт, новые ощущения', 'Это просто праздник!)', 'Приключения - наше все!!', 'Всё отлично!', 'Just VAU!!!', 'Отдых - он такой)'];
 var NAMES = ['Иван', 'Антон', 'Мария', 'Ксюша', 'Виктор', 'Юлия', 'Лолита', 'Вахтанг'];
 
 // генерация случайного целого числа
 
-function getRandomInRange(min, max) {
+var getRandomIntegerInRange = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+};
 
 // генерация случайного комментария
 
 var getRandomComment = function () {
-  var Comment = {
-    avatar: 'img/avatar-' + getRandomInRange(1, 6) + '.svg',
-    message: COMMENTS[getRandomInRange(0, (COMMENTS.length - 1))],
-    name: NAMES[getRandomInRange(0, (NAMES.length - 1))]
+  return {
+    avatar: 'img/avatar-' + getRandomIntegerInRange(1, 6) + '.svg',
+    message: COMMENTS[getRandomIntegerInRange(0, (COMMENTS.length - 1))],
+    name: NAMES[getRandomIntegerInRange(0, (NAMES.length - 1))]
   };
-
-  return Comment;
 };
 
 // генерация массива случайных комментариев
 
-var getCommentsRandomList = function (comment) {
-  var HowMuchComments = getRandomInRange(1, 5);
-  var CommentsList = [];
+var getCommentsRandomList = function () {
+  var randomCommentsQuantity = getRandomIntegerInRange(1, 5);
+  var commentsList = [];
 
-  for (var i = 0; i < HowMuchComments; i++) {
-    CommentsList.push(getRandomComment(comment));
+  for (var i = 0; i < randomCommentsQuantity; i++) {
+    commentsList.push(getRandomComment());
   }
 
-  return CommentsList;
+  return commentsList;
 };
 
 // генерация объекта с описанием фотографии
 
 var getPhotoDescription = function (i) {
-  var PhotoDescription = {
+  return {
     url: 'photos/' + (i + 1) + '.jpg',
-    description: DESCRIPTION[getRandomInRange(0, (DESCRIPTION.length - 1))],
-    likes: getRandomInRange(15, 200),
+    description: DESCRIPTIONS[getRandomIntegerInRange(0, (DESCRIPTIONS.length - 1))],
+    likes: getRandomIntegerInRange(15, 200),
     comments: getCommentsRandomList(getRandomComment())
   };
-
-  return PhotoDescription;
 };
+
+// получение массива из 25 объектов
+
+for (var i = 0; i < 25; i++) {
+  var photosArray = Array;
+  photosArray[i] = getPhotoDescription(i);
+}
 
 // создание DOM-элемента
 
-var photosList = document.querySelector('.pictures');
+var photosListElement = document.querySelector('.pictures');
 var photoTemplate = document.querySelector('#picture').content.querySelector('.picture');
 
 var renderPhoto = function (photo) {
@@ -65,10 +68,19 @@ var renderPhoto = function (photo) {
   return photoElement;
 };
 
+// заполнение блока DOM-элементами на основе массива объектов
+
 var fragment = document.createDocumentFragment();
 
-for (var i = 0; i < 25; i++) {
-  fragment.appendChild(renderPhoto(getPhotoDescription(i)));
-}
-photosList.appendChild(fragment);
+var renderPhotos = function (photosList) {
+  for (i = 0; i < 25; i++) {
+    fragment.appendChild(renderPhoto(photosList[i]));
+  }
+
+  return fragment;
+};
+
+var Photos = renderPhotos(photosArray);
+
+photosListElement.appendChild(Photos);
 
