@@ -46,10 +46,17 @@ var getPhotoDescription = function (i) {
 
 // получение массива из 25 объектов
 
-for (var i = 0; i < 25; i++) {
-  var photosArray = Array;
-  photosArray[i] = getPhotoDescription(i);
-}
+var getPhotosArray = function () {
+  var photosArray = [];
+
+  for (var i = 0; i < 25; i++) {
+    photosArray.push(getPhotoDescription(i));
+  }
+
+  return photosArray;
+};
+
+var photosArray = getPhotosArray();
 
 // создание DOM-элемента
 
@@ -73,7 +80,7 @@ var renderPhoto = function (photo) {
 var fragment = document.createDocumentFragment();
 
 var renderPhotos = function (photosList) {
-  for (i = 0; i < 25; i++) {
+  for (var i = 0; i < 25; i++) {
     fragment.appendChild(renderPhoto(photosList[i]));
   }
 
