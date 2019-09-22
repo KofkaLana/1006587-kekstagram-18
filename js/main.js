@@ -3,6 +3,7 @@
 var COMMENTS = ['Всё отлично!', 'В целом всё неплохо. Но не всё.', 'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.', 'Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.', 'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.', 'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'];
 var DESCRIPTIONS = ['Отдыхали как могли!', 'Отдыхать - не работать)))', 'Новый опыт, новые ощущения', 'Это просто праздник!)', 'Приключения - наше все!!', 'Всё отлично!', 'Just VAU!!!', 'Отдых - он такой)'];
 var NAMES = ['Иван', 'Антон', 'Мария', 'Ксюша', 'Виктор', 'Юлия', 'Лолита', 'Вахтанг'];
+var ARRAYLENGTH = 25; /* колличество элементов массива с описанием фотографии*/
 
 // генерация случайного целого числа
 
@@ -37,19 +38,19 @@ var getCommentsRandomList = function () {
 
 var getPhotoDescription = function (i) {
   return {
-    url: 'photos/' + (i + 1) + '.jpg',
+    url: 'photos/' + i + '.jpg',
     description: DESCRIPTIONS[getRandomIntegerInRange(0, (DESCRIPTIONS.length - 1))],
     likes: getRandomIntegerInRange(15, 200),
     comments: getCommentsRandomList(getRandomComment())
   };
 };
 
-// получение массива из 25 объектов
+// получение массива объектов
 
 var getPhotosArray = function () {
   var photosArray = [];
 
-  for (var i = 0; i < 25; i++) {
+  for (var i = 1; i <= ARRAYLENGTH; i++) {
     photosArray.push(getPhotoDescription(i));
   }
 
@@ -77,17 +78,16 @@ var renderPhoto = function (photo) {
 
 // заполнение блока DOM-элементами на основе массива объектов
 
-var fragment = document.createDocumentFragment();
-
 var renderPhotos = function (photosList) {
-  for (var i = 0; i < 25; i++) {
+  var fragment = document.createDocumentFragment();
+
+  for (var i = 0; i < photosList.length; i++) {
     fragment.appendChild(renderPhoto(photosList[i]));
   }
+  photosListElement.appendChild(fragment);
 
-  return fragment;
+  return photosListElement;
 };
 
-var Photos = renderPhotos(photosArray);
-
-photosListElement.appendChild(Photos);
+renderPhotos(photosArray);
 
