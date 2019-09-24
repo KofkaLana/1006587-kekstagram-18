@@ -3,7 +3,7 @@
 var COMMENTS = ['Всё отлично!', 'В целом всё неплохо. Но не всё.', 'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.', 'Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.', 'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.', 'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'];
 var DESCRIPTIONS = ['Отдыхали как могли!', 'Отдыхать - не работать)))', 'Новый опыт, новые ощущения', 'Это просто праздник!)', 'Приключения - наше все!!', 'Всё отлично!', 'Just VAU!!!', 'Отдых - он такой)'];
 var NAMES = ['Иван', 'Антон', 'Мария', 'Ксюша', 'Виктор', 'Юлия', 'Лолита', 'Вахтанг'];
-var ARRAYLENGTH = 25; /* колличество элементов массива с описанием фотографии*/
+var ARRAY_LENGTH = 25; /* колличество элементов массива с описанием фотографии*/
 
 // генерация случайного целого числа
 
@@ -50,7 +50,7 @@ var getPhotoDescription = function (i) {
 var getPhotosArray = function () {
   var photosArray = [];
 
-  for (var i = 1; i <= ARRAYLENGTH; i++) {
+  for (var i = 1; i <= ARRAY_LENGTH; i++) {
     photosArray.push(getPhotoDescription(i));
   }
 
@@ -91,3 +91,50 @@ var renderPhotos = function (photosList) {
 
 renderPhotos(photosArray);
 
+// просмотр фотографий в полноразмерном режиме
+
+var previewPhoto = document.querySelector('.big-picture');
+previewPhoto.classList.remove('hidden');
+previewPhoto.querySelector('.social__comment-count').classList.add('hidden');
+previewPhoto.querySelector('.comments-loader').classList.add('hidden');
+
+var bigPicture = previewPhoto.querySelector('img');
+var likesCount = previewPhoto.querySelector('.likes-count');
+var photoDescription = previewPhoto.querySelector('.social__caption');
+var commentsCount = previewPhoto.querySelector('.comments-count');
+var picture = photosArray[0];
+
+var renderBigPicture = function (photo) {
+  bigPicture.src = photo.url;
+  bigPicture.alt = photo.description;
+  photoDescription.textContent = photo.description;
+  likesCount.textContent = photo.likes;
+  commentsCount.textContent = photo.comments.length;
+};
+
+renderBigPicture(picture);
+
+function createCommentsElement(photo) {
+  var fragment = document.createDocumentFragment();
+
+  for (var i = 0; i < photo.comments.length; i++) {
+    var commentElement = document.querySelector('.social__comment').cloneNode(true);
+    var commentAvatar = commentElement.querySelector('.social__picture');
+    var commentText = commentElement.querySelector('.social__text');
+    commentAvatar.src = photo.comments[i].avatar;
+    commentAvatar.alt = photo.comments[i].name;
+    commentText.textContent = photo.comments[i].message;
+    fragment.appendChild(commentElement);
+  }
+  return fragment;
+}
+
+var photoCommentsList = previewPhoto.querySelector('.social__comments');
+
+function renderComments(photo) {
+  var fragment = createCommentsElement(photo);
+  photoCommentsList.innerHTML = '';
+  photoCommentsList.appendChild(fragment);
+}
+
+renderComments(picture);
