@@ -99,13 +99,13 @@ var showElement = function (element) {
   element.classList.remove('hidden');
 };
 
-var closeElement = function (element) {
+var hideElement = function (element) {
   element.classList.add('hidden');
 };
 
 // showElement(previewPhoto);
-closeElement(previewPhoto.querySelector('.social__comment-count'));
-closeElement(previewPhoto.querySelector('.comments-loader'));
+hideElement(previewPhoto.querySelector('.social__comment-count'));
+hideElement(previewPhoto.querySelector('.comments-loader'));
 
 var bigPicture = previewPhoto.querySelector('img');
 var likesCount = previewPhoto.querySelector('.likes-count');
@@ -154,12 +154,12 @@ var ESCAPE_KEYCODE = 27;
 var btnClosePreview = previewPhoto.querySelector('.cancel');
 
 btnClosePreview.addEventListener('click', function () {
-  closeElement(previewPhoto);
+  hideElement(previewPhoto);
 });
 
 document.addEventListener('keydown', function (evt) {
   if (evt.keyCode === ESCAPE_KEYCODE) {
-    closeElement(previewPhoto);
+    hideElement(previewPhoto);
   }
 });
 
@@ -168,19 +168,30 @@ var uploadFileInput = uploadElement.querySelector('#upload-file');
 var imageEditingForm = uploadElement.querySelector('.img-upload__overlay');
 var btnCloseEditionForm = uploadElement.querySelector('.cancel');
 
+var onFormEscPress = function (evt) {
+  if (evt.keyCode === ESCAPE_KEYCODE) {
+    closeForm();
+  }
+};
+
+var openForm = function () {
+  imageEditingForm.classList.remove('hidden');
+  document.addEventListener('keydown', onFormEscPress);
+};
+
+var closeForm = function () {
+  imageEditingForm.classList.add('hidden');
+  document.removeEventListener('keydown', onFormEscPress);
+  uploadFileInput.value = '';
+};
+
 uploadFileInput.addEventListener('change', function () {
-  showElement(imageEditingForm);
-  closeElement(effectLevel);
+  openForm();
+  hideElement(effectLevel);
 });
 
 btnCloseEditionForm.addEventListener('click', function () {
-  closeElement(imageEditingForm);
-});
-
-document.addEventListener('keydown', function (evt) {
-  if (evt.keyCode === ESCAPE_KEYCODE) {
-    closeElement(imageEditingForm);
-  }
+  closeForm();
 });
 
 // Редактирование размера изображения
@@ -198,8 +209,8 @@ scaleValue.value = SCALE_DEFAULT + '%';
 
 var setScalePhoto = function (value) {
   var currentScale = parseInt(scaleValue.value, 10);
+  currentScale += SCALE_STEP * value;
   if (currentScale >= SCALE_MIN && currentScale <= SCALE_MAX) {
-    currentScale += SCALE_STEP * value;
     scaleValue.value = currentScale + '%';
     editablePhoto.style.transform = 'scale(' + currentScale / 100 + ')';
   }
@@ -208,19 +219,11 @@ var setScalePhoto = function (value) {
 };
 
 btnSmaller.addEventListener('click', function () {
-  if (scaleValue.value === SCALE_MIN + '%') {
-    alert('недопустимое значение');
-  } else {
-    setScalePhoto(-1);
-  }
+  setScalePhoto(-1);
 });
 
 btnBigger.addEventListener('click', function () {
-  if (scaleValue.value === SCALE_MAX + '%') {
-    alert('недопустимое значение');
-  } else {
-    setScalePhoto(1);
-  }
+  setScalePhoto(1);
 });
 
 // Применение эффекта для изображения
@@ -281,28 +284,28 @@ var onImageEffectClick = function (evt) {
   editablePhoto.classList = '';
   editablePhoto.classList.add('effects__preview--' + currentEffectName);
   setPinPosition(DEFAULT_EFFECT_LEVEL);
-
-  if (currentEffectName === DEFAULT_EFFECT) {
-    closeElement(effectLevel);
-    editablePhoto.style.filter = '';
-  } else {
-    showElement(effectLevel);
-  }
+  applyEffect(DEFAULT_EFFECT_LEVEL);
 };
 
 var setPinPosition = function (value) {
   effectDepth.style.width = value + '%';
   effectPinElement.style.left = value + '%';
   effectLevelValue.value = Math.round(value);
-  applyEffect(value);
 };
 
 var applyEffect = function (value) {
   if (currentEffectName === DEFAULT_EFFECT) {
+    hideElement(effectLevel);
     editablePhoto.style.filter = '';
   } else {
-    editablePhoto.style.filter = EffectParameter[currentEffectName].PROPERTY + '(' + getSaturationLevel(currentEffectName, value) + ')';
+    showElement(effectLevel);
+    editablePhoto.style.filter = getEffect(value);
   }
+  setPinPosition(value);
+};
+
+var getEffect = function (value) {
+  return EffectParameter[currentEffectName].PROPERTY + '(' + getSaturationLevel(currentEffectName, value) + ')';
 };
 
 // определения уровня насыщенности эффекта = положения пина слайдера
@@ -315,7 +318,6 @@ effectsList.addEventListener('click', onImageEffectClick);
 
 effectPinElement.addEventListener('mouseup', function () {
   setPinPosition(effectLevelValue.value);
-  console.log('цапнули мышку');
 });
 
 // Валидация хеш-тегов
@@ -331,7 +333,7 @@ var checkRepeatHashtags = function (hashtagsList) {
   for (var i = 0; i < hashtagsList.length; i++) {
     var currentHashtag = hashtagsList[i];
     for (var j = 1; j < hashtagsList.length; j++) {
-      if (hashtagsList[i] === currentHashtag) {
+      if (hashtagsList[j] === currentHashtag && i !== j) {
         return true;
       }
     }
@@ -346,6 +348,9 @@ var validityHashtags = function () {
   if (hashtags.value === '') {
     return;
   }
+  if (hashtagsArray.length > HASHTAGS_AMOUNT) {
+    errorMessage = 'Допустимое количество хэштегов не более ' + HASHTAGS_AMOUNT;
+  }
 
   hashtagsArray.forEach(function (hashtagItem) {
     if (hashtagItem.indexOf(HASH_SYMBOL, 1) > 1) {
@@ -354,8 +359,6 @@ var validityHashtags = function () {
       errorMessage = 'Хэштег должен начинаться с символа #';
     } else if (hashtagItem.charAt(0) === HASH_SYMBOL && hashtagItem.length === 1) {
       errorMessage = 'Хеш-тег не может состоять только из одного символа #';
-    } else if (hashtags.length > HASHTAGS_AMOUNT) {
-      errorMessage = 'Допустимое количество хэштегов не более 5';
     } else if (hashtagItem.length > HASHTAG_LENGTH) {
       errorMessage = 'Максимальная длина одного хэш-тега 20 символов, включая решётку';
     } else if (checkRepeatHashtags(hashtagsArray)) {
@@ -368,6 +371,20 @@ var validityHashtags = function () {
   hashtags.setCustomValidity(errorMessage);
 };
 
-// hashtags.addEventListener('input', validityHashtags());
+hashtags.addEventListener('input', validityHashtags);
 
-btnSubmitForm.addEventListener('click', validityHashtags);
+btnSubmitForm.addEventListener('click', function () {
+  if (!hashtags.validity.valid) {
+    hashtags.style.outline = '2px solid red';
+  } else {
+    hashtags.style.outline = 'none';
+  }
+});
+
+hashtags.addEventListener('focusin', function () {
+  document.removeEventListener('keydown', onFormEscPress);
+});
+
+hashtags.addEventListener('focusout', function () {
+  document.addEventListener('keydown', onFormEscPress);
+});
