@@ -92,7 +92,8 @@ var renderPhotos = function (photosList) {
 renderPhotos(photosArray);
 
 // просмотр фотографий в полноразмерном режиме
-var bigPhoto = document.querySelector('.picture');
+
+var bigPhotos = document.querySelectorAll('.picture');
 var previewPhoto = document.querySelector('.big-picture');
 
 var showElement = function (element) {
@@ -103,10 +104,7 @@ var hideElement = function (element) {
   element.classList.add('hidden');
 };
 
-bigPhoto.addEventListener('click', function () {
-  showElement(previewPhoto);
-});
-// showElement(previewPhoto);
+// прячем блоки счетчика комментариеа и загрузки новых комментариев
 hideElement(previewPhoto.querySelector('.social__comment-count'));
 hideElement(previewPhoto.querySelector('.comments-loader'));
 
@@ -114,7 +112,6 @@ var bigPicture = previewPhoto.querySelector('img');
 var likesCount = previewPhoto.querySelector('.likes-count');
 var photoDescription = previewPhoto.querySelector('.social__caption');
 var commentsCount = previewPhoto.querySelector('.comments-count');
-var picture = photosArray[0];
 
 var renderBigPicture = function (photo) {
   bigPicture.src = photo.url;
@@ -123,8 +120,6 @@ var renderBigPicture = function (photo) {
   likesCount.textContent = photo.likes;
   commentsCount.textContent = photo.comments.length;
 };
-
-renderBigPicture(picture);
 
 function createCommentsElement(photo) {
   var fragment = document.createDocumentFragment();
@@ -149,9 +144,19 @@ function renderComments(photo) {
   photoCommentsList.appendChild(fragment);
 }
 
-renderComments(picture);
+var onPhotoClick = function (bigPhoto, photo) {
+  bigPhoto.addEventListener('click', function () {
+    showElement(previewPhoto);
+    renderComments(photo);
+    renderBigPicture(photo);
+  });
+};
 
-// задание 4
+for (var i = 0; i < bigPhotos.length; i++) {
+  onPhotoClick(bigPhotos[i], photosArray[i]);
+}
+
+// Загрузка изображения и показ формы редактирования
 
 var ESCAPE_KEYCODE = 27;
 var btnClosePreview = previewPhoto.querySelector('.cancel');
@@ -339,7 +344,7 @@ var hashtags = uploadElement.querySelector('.text__hashtags');
 var btnSubmitForm = uploadElement.querySelector('.img-upload__submit');
 
 var checkRepeatHashtags = function (hashtagsList) {
-  for (var i = 0; i < hashtagsList.length; i++) {
+  for (i = 0; i < hashtagsList.length; i++) {
     var currentHashtag = hashtagsList[i];
     for (var j = 1; j < hashtagsList.length; j++) {
       if (hashtagsList[j] === currentHashtag && i !== j) {
@@ -350,8 +355,10 @@ var checkRepeatHashtags = function (hashtagsList) {
   return false;
 };
 
+var errorMessage = '';
+
 var validityHashtags = function () {
-  var errorMessage = '';
+  // var errorMessage = '';
   var hashtagsArray = hashtags.value.toLowerCase().replace(/[ ][ ]+/, ' ').split(' ');
 
   if (hashtags.value === '') {
@@ -380,14 +387,19 @@ var validityHashtags = function () {
   hashtags.setCustomValidity(errorMessage);
 };
 
+var setHightlightOutline = function (field) {
+  if (!field.validity.valid) {
+    field.style.outline = '2px solid red';
+  } else {
+    field.style.outline = 'none';
+  }
+};
+
 hashtags.addEventListener('input', validityHashtags);
 
 btnSubmitForm.addEventListener('click', function () {
-  if (!hashtags.validity.valid) {
-    hashtags.style.outline = '2px solid red';
-  } else {
-    hashtags.style.outline = 'none';
-  }
+  setHightlightOutline(hashtags);
+  setHightlightOutline(descriptionElement);
 });
 
 hashtags.addEventListener('focusin', function () {
@@ -397,3 +409,31 @@ hashtags.addEventListener('focusin', function () {
 hashtags.addEventListener('focusout', function () {
   document.addEventListener('keydown', onFormEscPress);
 });
+
+// валидация комментариев
+
+var descriptionElement = uploadElement.querySelector('.text__description');
+var DESCRIPTION_LENGTH = 140;
+
+var validityComments = function () {
+  if (descriptionElement.value === '') {
+    return;
+  }
+
+  if (descriptionElement.value.length === DESCRIPTION_LENGTH) {
+    errorMessage = 'Длина комментария не может составлять больше 140 символов';
+  }
+
+  descriptionElement.setCustomValidity(errorMessage);
+};
+
+descriptionElement.addEventListener('input', validityComments);
+
+descriptionElement.addEventListener('focusin', function () {
+  document.removeEventListener('keydown', onFormEscPress);
+});
+
+descriptionElement.addEventListener('focusout', function () {
+  document.addEventListener('keydown', onFormEscPress);
+});
+
