@@ -92,7 +92,7 @@ var renderPhotos = function (photosList) {
 renderPhotos(photosArray);
 
 // просмотр фотографий в полноразмерном режиме
-
+var bigPhoto = document.querySelector('.picture');
 var previewPhoto = document.querySelector('.big-picture');
 
 var showElement = function (element) {
@@ -103,6 +103,9 @@ var hideElement = function (element) {
   element.classList.add('hidden');
 };
 
+bigPhoto.addEventListener('click', function () {
+  showElement(previewPhoto);
+});
 // showElement(previewPhoto);
 hideElement(previewPhoto.querySelector('.social__comment-count'));
 hideElement(previewPhoto.querySelector('.comments-loader'));
@@ -188,6 +191,7 @@ var closeForm = function () {
 uploadFileInput.addEventListener('change', function () {
   openForm();
   hideElement(effectLevel);
+  setDefaultSettings();
 });
 
 btnCloseEditionForm.addEventListener('click', function () {
@@ -205,7 +209,12 @@ var SCALE_DEFAULT = 100;
 var SCALE_MIN = 25;
 var SCALE_MAX = 100;
 
-scaleValue.value = SCALE_DEFAULT + '%';
+var setDefaultSettings = function () {
+  scaleValue.value = SCALE_DEFAULT + '%';
+  editablePhoto.style.transform = 'scale(' + SCALE_DEFAULT / 100 + ')';
+  editablePhoto.classList = '';
+  editablePhoto.style.filter = '';
+};
 
 var setScalePhoto = function (value) {
   var currentScale = parseInt(scaleValue.value, 10);
@@ -343,7 +352,7 @@ var checkRepeatHashtags = function (hashtagsList) {
 
 var validityHashtags = function () {
   var errorMessage = '';
-  var hashtagsArray = hashtags.value.toLowerCase().split(' ');
+  var hashtagsArray = hashtags.value.toLowerCase().replace(/[ ][ ]+/, ' ').split(' ');
 
   if (hashtags.value === '') {
     return;
@@ -360,7 +369,7 @@ var validityHashtags = function () {
     } else if (hashtagItem.charAt(0) === HASH_SYMBOL && hashtagItem.length === 1) {
       errorMessage = 'Хеш-тег не может состоять только из одного символа #';
     } else if (hashtagItem.length > HASHTAG_LENGTH) {
-      errorMessage = 'Максимальная длина одного хэш-тега 20 символов, включая решётку';
+      errorMessage = 'Максимальная длина одного хэш-тега ' + HASHTAG_LENGTH + ' символов, включая решётку';
     } else if (checkRepeatHashtags(hashtagsArray)) {
       errorMessage = 'Хэштеги не должны повторяться';
     } else {
