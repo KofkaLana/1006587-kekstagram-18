@@ -96,6 +96,9 @@ renderPhotos(photosArray);
 var bigPhotos = document.querySelectorAll('.picture');
 var previewPhoto = document.querySelector('.big-picture');
 
+var btnClosePreview = previewPhoto.querySelector('.cancel');
+var ESCAPE_KEYCODE = 27;
+
 var showElement = function (element) {
   element.classList.remove('hidden');
 };
@@ -156,11 +159,6 @@ for (var i = 0; i < bigPhotos.length; i++) {
   onPhotoClick(bigPhotos[i], photosArray[i]);
 }
 
-// Загрузка изображения и показ формы редактирования
-
-var ESCAPE_KEYCODE = 27;
-var btnClosePreview = previewPhoto.querySelector('.cancel');
-
 btnClosePreview.addEventListener('click', function () {
   hideElement(previewPhoto);
 });
@@ -170,6 +168,8 @@ document.addEventListener('keydown', function (evt) {
     hideElement(previewPhoto);
   }
 });
+
+// Загрузка изображения и показ формы редактирования
 
 var uploadElement = document.querySelector('.img-upload');
 var uploadFileInput = uploadElement.querySelector('#upload-file');
@@ -201,6 +201,8 @@ uploadFileInput.addEventListener('change', function () {
 
 btnCloseEditionForm.addEventListener('click', function () {
   closeForm();
+  hashtags.style.outline = '';
+  descriptionElement.style.outline = '';
 });
 
 // Редактирование размера изображения
@@ -344,7 +346,7 @@ var hashtags = uploadElement.querySelector('.text__hashtags');
 var btnSubmitForm = uploadElement.querySelector('.img-upload__submit');
 
 var checkRepeatHashtags = function (hashtagsList) {
-  for (i = 0; i < hashtagsList.length; i++) {
+  for (var i = 0; i < hashtagsList.length; i++) {
     var currentHashtag = hashtagsList[i];
     for (var j = 1; j < hashtagsList.length; j++) {
       if (hashtagsList[j] === currentHashtag && i !== j) {
@@ -355,10 +357,9 @@ var checkRepeatHashtags = function (hashtagsList) {
   return false;
 };
 
-var errorMessage = '';
-
-var validityHashtags = function () {
-  // var errorMessage = '';
+var validateHashtags = function () {
+  var errorMessage = '';
+  hashtags.style.outline = '';
   var hashtagsArray = hashtags.value.toLowerCase().replace(/[ ][ ]+/, ' ').split(' ');
 
   if (hashtags.value === '') {
@@ -395,7 +396,7 @@ var setHightlightOutline = function (field) {
   }
 };
 
-hashtags.addEventListener('input', validityHashtags);
+hashtags.addEventListener('input', validateHashtags);
 
 btnSubmitForm.addEventListener('click', function () {
   setHightlightOutline(hashtags);
@@ -415,19 +416,21 @@ hashtags.addEventListener('focusout', function () {
 var descriptionElement = uploadElement.querySelector('.text__description');
 var DESCRIPTION_LENGTH = 140;
 
-var validityComments = function () {
+var validateComments = function () {
+  var errorMessage = '';
+  descriptionElement.style.outline = '';
   if (descriptionElement.value === '') {
     return;
   }
 
-  if (descriptionElement.value.length === DESCRIPTION_LENGTH) {
+  if (descriptionElement.value.length > DESCRIPTION_LENGTH) {
     errorMessage = 'Длина комментария не может составлять больше 140 символов';
   }
 
   descriptionElement.setCustomValidity(errorMessage);
 };
 
-descriptionElement.addEventListener('input', validityComments);
+descriptionElement.addEventListener('input', validateComments);
 
 descriptionElement.addEventListener('focusin', function () {
   document.removeEventListener('keydown', onFormEscPress);
