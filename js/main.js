@@ -92,8 +92,12 @@ var renderPhotos = function (photosList) {
 renderPhotos(photosArray);
 
 // просмотр фотографий в полноразмерном режиме
-var bigPhoto = document.querySelector('.picture');
+
+var bigPhotos = document.querySelectorAll('.picture');
 var previewPhoto = document.querySelector('.big-picture');
+
+var btnClosePreview = previewPhoto.querySelector('.cancel');
+var ESCAPE_KEYCODE = 27;
 
 var showElement = function (element) {
   element.classList.remove('hidden');
@@ -103,10 +107,7 @@ var hideElement = function (element) {
   element.classList.add('hidden');
 };
 
-bigPhoto.addEventListener('click', function () {
-  showElement(previewPhoto);
-});
-// showElement(previewPhoto);
+// прячем блоки счетчика комментариеа и загрузки новых комментариев
 hideElement(previewPhoto.querySelector('.social__comment-count'));
 hideElement(previewPhoto.querySelector('.comments-loader'));
 
@@ -114,7 +115,6 @@ var bigPicture = previewPhoto.querySelector('img');
 var likesCount = previewPhoto.querySelector('.likes-count');
 var photoDescription = previewPhoto.querySelector('.social__caption');
 var commentsCount = previewPhoto.querySelector('.comments-count');
-var picture = photosArray[0];
 
 var renderBigPicture = function (photo) {
   bigPicture.src = photo.url;
@@ -123,8 +123,6 @@ var renderBigPicture = function (photo) {
   likesCount.textContent = photo.likes;
   commentsCount.textContent = photo.comments.length;
 };
-
-renderBigPicture(picture);
 
 function createCommentsElement(photo) {
   var fragment = document.createDocumentFragment();
@@ -149,12 +147,17 @@ function renderComments(photo) {
   photoCommentsList.appendChild(fragment);
 }
 
-renderComments(picture);
+var onPhotoClick = function (bigPhoto, photo) {
+  bigPhoto.addEventListener('click', function () {
+    showElement(previewPhoto);
+    renderComments(photo);
+    renderBigPicture(photo);
+  });
+};
 
-// задание 4
-
-var ESCAPE_KEYCODE = 27;
-var btnClosePreview = previewPhoto.querySelector('.cancel');
+for (var i = 0; i < bigPhotos.length; i++) {
+  onPhotoClick(bigPhotos[i], photosArray[i]);
+}
 
 btnClosePreview.addEventListener('click', function () {
   hideElement(previewPhoto);
@@ -165,6 +168,8 @@ document.addEventListener('keydown', function (evt) {
     hideElement(previewPhoto);
   }
 });
+
+// Загрузка изображения и показ формы редактирования
 
 var uploadElement = document.querySelector('.img-upload');
 var uploadFileInput = uploadElement.querySelector('#upload-file');
@@ -196,6 +201,8 @@ uploadFileInput.addEventListener('change', function () {
 
 btnCloseEditionForm.addEventListener('click', function () {
   closeForm();
+  hashtags.style.outline = '';
+  descriptionElement.style.outline = '';
 });
 
 // Редактирование размера изображения
@@ -350,8 +357,9 @@ var checkRepeatHashtags = function (hashtagsList) {
   return false;
 };
 
-var validityHashtags = function () {
+var validateHashtags = function () {
   var errorMessage = '';
+  hashtags.style.outline = '';
   var hashtagsArray = hashtags.value.toLowerCase().replace(/[ ][ ]+/, ' ').split(' ');
 
   if (hashtags.value === '') {
@@ -380,14 +388,19 @@ var validityHashtags = function () {
   hashtags.setCustomValidity(errorMessage);
 };
 
-hashtags.addEventListener('input', validityHashtags);
+var setHightlightOutline = function (field) {
+  if (!field.validity.valid) {
+    field.style.outline = '2px solid red';
+  } else {
+    field.style.outline = 'none';
+  }
+};
+
+hashtags.addEventListener('input', validateHashtags);
 
 btnSubmitForm.addEventListener('click', function () {
-  if (!hashtags.validity.valid) {
-    hashtags.style.outline = '2px solid red';
-  } else {
-    hashtags.style.outline = 'none';
-  }
+  setHightlightOutline(hashtags);
+  setHightlightOutline(descriptionElement);
 });
 
 hashtags.addEventListener('focusin', function () {
@@ -397,3 +410,33 @@ hashtags.addEventListener('focusin', function () {
 hashtags.addEventListener('focusout', function () {
   document.addEventListener('keydown', onFormEscPress);
 });
+
+// валидация комментариев
+
+var descriptionElement = uploadElement.querySelector('.text__description');
+var DESCRIPTION_LENGTH = 140;
+
+var validateComments = function () {
+  var errorMessage = '';
+  descriptionElement.style.outline = '';
+  if (descriptionElement.value === '') {
+    return;
+  }
+
+  if (descriptionElement.value.length > DESCRIPTION_LENGTH) {
+    errorMessage = 'Длина комментария не может составлять больше 140 символов';
+  }
+
+  descriptionElement.setCustomValidity(errorMessage);
+};
+
+descriptionElement.addEventListener('input', validateComments);
+
+descriptionElement.addEventListener('focusin', function () {
+  document.removeEventListener('keydown', onFormEscPress);
+});
+
+descriptionElement.addEventListener('focusout', function () {
+  document.addEventListener('keydown', onFormEscPress);
+});
+
