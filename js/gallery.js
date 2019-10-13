@@ -50,22 +50,4 @@
       window.util.hideElement(previewPhoto);
     }
   });
-
-  // var onEscPress = function (evt) {
-  //   window.util.isEscEvent(evt, closeWindow);
-  // };
-
-  // var closeWindow = function () {
-  //   window.util.hideElement(previewPhoto);
-  //   document.removeEventListener('keydown', onEscPress);
-  // };
-
-  // var openWindow = function () {
-  //   window.util.showElement(previewPhoto);
-  //   document.addEventListener('keydown', onEscPress);
-  // };
-
-  // btnClosePreview.addEventListener('click', function () {
-  //   window.util.closeWindow(previewPhoto);
-  // });
 })();
