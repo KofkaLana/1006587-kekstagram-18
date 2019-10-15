@@ -18,7 +18,19 @@
     return photosListElement;
   };
 
-  renderPhotos(window.data.photosArray);
+  // renderPhotos(window.data.photosArray);
+
+  var onSuccess = function (data) {
+    renderPhotos(data);
+  };
+
+  var onError = function (message) {
+    window.error.onError(message);
+  };
+
+  window.load.loadPhotos(onSuccess, onError);
+
+  // открытие фото по клику по миниатюре
 
   var bigPhotos = document.querySelectorAll('.picture');
   var previewPhoto = document.querySelector('.big-picture');
@@ -27,8 +39,6 @@
   // прячем блоки счетчика комментариеа и загрузки новых комментариев
   window.util.hideElement(previewPhoto.querySelector('.social__comment-count'));
   window.util.hideElement(previewPhoto.querySelector('.comments-loader'));
-
-  // открытие фото по клику по миниатюре
 
   var onPhotoClick = function (bigPhoto, photo) {
     bigPhoto.addEventListener('click', function () {
@@ -50,22 +60,4 @@
       window.util.hideElement(previewPhoto);
     }
   });
-
-  // var onEscPress = function (evt) {
-  //   window.util.isEscEvent(evt, closeWindow);
-  // };
-
-  // var closeWindow = function () {
-  //   window.util.hideElement(previewPhoto);
-  //   document.removeEventListener('keydown', onEscPress);
-  // };
-
-  // var openWindow = function () {
-  //   window.util.showElement(previewPhoto);
-  //   document.addEventListener('keydown', onEscPress);
-  // };
-
-  // btnClosePreview.addEventListener('click', function () {
-  //   window.util.closeWindow(previewPhoto);
-  // });
 })();
