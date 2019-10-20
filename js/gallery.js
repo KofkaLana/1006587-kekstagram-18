@@ -18,8 +18,6 @@
     return photosListElement;
   };
 
-  // renderPhotos(window.data.photosArray);
-
   var onSuccess = function (data) {
     renderPhotos(data);
   };
