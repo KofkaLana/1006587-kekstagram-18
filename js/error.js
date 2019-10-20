@@ -14,8 +14,8 @@
     var tryAgainButton = errorButtons[0];
     window.util.hideElement(errorButtons[1]);
     tryAgainButton.addEventListener('click', function () {
-      window.timeout *= 10;
-      // не придумала, как вызвать функцию загрузки из модуля load и не зациклить все
+      window.load.timeout *= 10;
+      window.load.loadPhotos(); // подходит, но не работает же... говорит, что onError не функция. Ну или я чего-то не понимаю
     });
   };
 

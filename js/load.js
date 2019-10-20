@@ -2,7 +2,7 @@
 
 (function () {
   var URL = 'https://js.dump.academy/kekstagram/data';
-  var TIMEOUT = 10000;
+  var TIMEOUT = 3000;
   var ERROR_STATUS = 200;
 
   var load = function (onSuccess, onError) {
@@ -31,6 +31,7 @@
   };
 
   window.load = {
+    timeout: TIMEOUT,
     loadPhotos: load
   };
 })();
