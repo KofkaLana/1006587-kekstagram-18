@@ -28,26 +28,13 @@
 
   window.load.loadPhotos(onSuccess, onError);
 
-  // открытие фото по клику по миниатюре
-
-  var bigPhotos = document.querySelectorAll('.picture');
+  // работа с превью
   var previewPhoto = document.querySelector('.big-picture');
   var btnClosePreview = previewPhoto.querySelector('.cancel');
 
   // прячем блоки счетчика комментариеа и загрузки новых комментариев
   window.util.hideElement(previewPhoto.querySelector('.social__comment-count'));
   window.util.hideElement(previewPhoto.querySelector('.comments-loader'));
-
-  var onPhotoClick = function (bigPhoto, photo) {
-    bigPhoto.addEventListener('click', function () {
-      window.preview.bigPhoto(photo);
-      window.util.showElement(previewPhoto);
-    });
-  };
-
-  for (var i = 0; i < bigPhotos.length; i++) {
-    onPhotoClick(bigPhotos[i], window.data.photosArray[i]);
-  }
 
   btnClosePreview.addEventListener('click', function () {
     window.util.hideElement(previewPhoto);

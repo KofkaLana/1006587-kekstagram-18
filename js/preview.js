@@ -39,6 +39,7 @@
     commentsCount.textContent = photo.comments.length;
 
     renderComments(photo);
+    window.util.showElement(previewPhoto);
   };
 
   window.preview = {
@@ -46,3 +47,4 @@
   };
 
 })();
+
