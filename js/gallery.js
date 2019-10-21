@@ -18,23 +18,9 @@
     return photosListElement;
   };
 
-  var onSuccess = function (data) {
-    renderPhotos(data);
-  };
-
-  var onError = function (message) {
-    window.error.onError(message);
-  };
-
-  window.load.loadPhotos(onSuccess, onError);
-
   // работа с превью
   var previewPhoto = document.querySelector('.big-picture');
   var btnClosePreview = previewPhoto.querySelector('.cancel');
-
-  // прячем блоки счетчика комментариеа и загрузки новых комментариев
-  window.util.hideElement(previewPhoto.querySelector('.social__comment-count'));
-  window.util.hideElement(previewPhoto.querySelector('.comments-loader'));
 
   btnClosePreview.addEventListener('click', function () {
     window.util.hideElement(previewPhoto);
@@ -45,4 +31,8 @@
       window.util.hideElement(previewPhoto);
     }
   });
+
+  window.gallery = {
+    render: renderPhotos
+  };
 })();

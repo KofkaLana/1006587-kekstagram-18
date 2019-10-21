@@ -10,6 +10,10 @@
   var commentsCount = previewPhoto.querySelector('.comments-count');
   var photoCommentsList = previewPhoto.querySelector('.social__comments');
 
+  // прячем блоки счетчика комментариеа и загрузки новых комментариев
+  window.util.hideElement(previewPhoto.querySelector('.social__comment-count'));
+  window.util.hideElement(previewPhoto.querySelector('.comments-loader'));
+
   function createCommentsElement(photo) {
     var fragment = document.createDocumentFragment();
 

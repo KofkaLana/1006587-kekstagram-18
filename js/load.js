@@ -2,13 +2,12 @@
 
 (function () {
   var URL = 'https://js.dump.academy/kekstagram/data';
-  var TIMEOUT = 3000;
+  window.TIMEOUT = 3000;
   var ERROR_STATUS = 200;
 
   var load = function (onSuccess, onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
-    xhr.timeout = TIMEOUT;
 
     xhr.addEventListener('load', function () {
       if (xhr.status === ERROR_STATUS) {
@@ -26,12 +25,13 @@
       onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
     });
 
+    xhr.timeout = window.TIMEOUT;
+
     xhr.open('GET', URL);
     xhr.send();
   };
 
   window.load = {
-    timeout: TIMEOUT,
-    loadPhotos: load
+    loadData: load
   };
 })();
