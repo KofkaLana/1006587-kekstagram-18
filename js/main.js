@@ -4,8 +4,8 @@
 
 (function () {
   var onSuccess = function (data) {
-    window.data.dataArray(data);
-    window.gallery.render(window.photos);
+    window.data.save(data);
+    window.gallery.render(data);
   };
 
   var onError = function (message) {
