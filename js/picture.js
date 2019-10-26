@@ -14,6 +14,13 @@
     photoElement.querySelector('.picture__comments').textContent = photo.comments.length;
     photoElement.querySelector('.picture__likes').textContent = photo.likes;
 
+    // открытие фото по клику по миниатюре
+    photoElement.addEventListener('click', function (evt) {
+      evt.preventDefault();
+
+      window.preview.bigPhoto(photo);
+    });
+
     return photoElement;
   };
 
