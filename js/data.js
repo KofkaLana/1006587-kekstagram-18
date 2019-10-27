@@ -9,7 +9,9 @@
   };
 
   window.data = {
-    photos: photosData,
+    get: function () {
+      return photosData;
+    },
     save: SaveData
   };
 })();
