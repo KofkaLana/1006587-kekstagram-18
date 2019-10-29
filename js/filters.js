@@ -13,52 +13,28 @@
     }
   };
 
-  var getPopularPhotos = function () {
-    return window.data.get();
+  var fillterButtons = document.querySelector('.img-filters');
+  var Filters = {
+    'filter-popular': window.data.popularPhotos,
+    'filter-random': window.data.randomPhotos,
+    'filter-discussed': window.data.discussPhotos
   };
 
-  var getRandomPhotos = function () {
-    var PHOTOS_RANDOM_COUNT = 10;
+  fillterButtons.addEventListener('click', function (evt) {
 
-    var photosArray = [];
-    var totalNumbers = window.data.get().length;
-    var arrayTotalNumbers = [];
-    var arrayRandomNumbers = [];
-    var tempRandomNumber;
-    while (totalNumbers--) {
-      arrayTotalNumbers.push(totalNumbers);
+    if (evt.target.tagName !== 'BUTTON') {
+      return;
     }
-    while (arrayTotalNumbers.length) {
-      tempRandomNumber = Math.round(Math.random() * (arrayTotalNumbers.length - 1));
-      arrayRandomNumbers.push(arrayTotalNumbers[tempRandomNumber]);
-      arrayTotalNumbers.splice(tempRandomNumber, 1);
-    }
-    var num = arrayRandomNumbers.slice(0, PHOTOS_RANDOM_COUNT);
-    for (var i = 0; i < num.length; i++) {
-      var index = num[i];
-      photosArray.push(window.data.get()[index]);
-    }
-    return photosArray;
-  };
 
-  var getDiscussPhotos = function () {
-    var tempArray = window.data.get().slice();
-    tempArray.sort(function (a, b) {
-      if (a.comments.length < b.comments.length) {
-        return 1;
-      } else if (a.comments.length > b.comments.length) {
-        return -1;
-      } else {
-        return 0;
-      }
+    var activeFilter = document.querySelector('.img-filters__button--active');
+    activeFilter.classList.remove('img-filters__button--active');
+    evt.target.classList.add('img-filters__button--active');
+
+    var showPhotos = window.debounce(function () {
+      removePhotos();
+      window.gallery.render(Filters[evt.target.id]());
     });
-    return tempArray;
-  };
 
-  window.filters = {
-    remove: removePhotos,
-    popularPhotos: getPopularPhotos,
-    randomPhotos: getRandomPhotos,
-    discussPhotos: getDiscussPhotos
-  };
+    showPhotos();
+  });
 })();
