@@ -5,7 +5,9 @@
 (function () {
   var onSuccess = function (data) {
     window.data.save(data);
-    window.gallery.render(data);
+    window.gallery.render(window.data.get());
+
+    document.querySelector('.img-filters').classList.remove('img-filters--inactive');
   };
 
   var onError = function (message) {
