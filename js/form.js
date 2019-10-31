@@ -56,6 +56,7 @@
   var MAX_EFFECT_LEVEL = 100;
   var effectsList = uploadElement.querySelector('.effects__list');
   var effectPinElement = uploadElement.querySelector('.effect-level__pin');
+  var lineEffectDepth = uploadElement.querySelector('.effect-level__line');
   var effectDepth = uploadElement.querySelector('.effect-level__depth');
   var effectLevel = uploadElement.querySelector('.effect-level');
   var effectLevelValue = effectLevel.querySelector('.effect-level__value');
@@ -124,7 +125,6 @@
       window.util.showElement(effectLevel);
       editablePhoto.style.filter = getEffect(value);
     }
-    setPinPosition(value);
   };
 
   var getEffect = function (value) {
@@ -139,8 +139,38 @@
 
   effectsList.addEventListener('click', onImageEffectClick);
 
-  effectPinElement.addEventListener('mouseup', function () {
-    setPinPosition(effectLevelValue.value);
+  effectPinElement.addEventListener('mousedown', function (evt) {
+    evt.preventDefault();
+
+    var startCoords = evt.clientX;
+
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+
+      var shift = startCoords - moveEvt.clientX;
+      startCoords = moveEvt.clientX;
+      var newX = effectPinElement.offsetLeft - shift;
+      if (newX < 0) {
+        newX = 0;
+      } else if (newX > lineEffectDepth.offsetWidth) {
+        newX = lineEffectDepth.offsetWidth;
+      }
+
+      effectPinElement.style.left = newX + 'px';
+      var currentValue = Math.round(newX / lineEffectDepth.offsetWidth * 100);
+      effectDepth.style.width = currentValue + '%';
+      effectLevelValue.value = currentValue;
+      applyEffect(currentValue);
+    };
+
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
   });
 
   // Валидация хеш-тегов
