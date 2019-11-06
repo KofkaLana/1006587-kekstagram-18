@@ -235,11 +235,6 @@
 
   hashtags.addEventListener('input', validateHashtags);
 
-  btnSubmitForm.addEventListener('click', function () {
-    setHightlightOutline(hashtags);
-    setHightlightOutline(descriptionElement);
-  });
-
   hashtags.addEventListener('focusin', function () {
     document.removeEventListener('keydown', onEscPress);
   });
@@ -276,4 +271,63 @@
   descriptionElement.addEventListener('focusout', function () {
     document.addEventListener('keydown', onEscPress);
   });
+
+  var form = document.querySelector('.img-upload__form');
+
+  btnSubmitForm.addEventListener('click', function (evt) {
+    setHightlightOutline(hashtags);
+    setHightlightOutline(descriptionElement);
+
+    window.load.uploadData(new FormData(form), onSuccess, onError);
+    imageEditingForm.classList.add('hidden');
+    resetForm();
+    evt.preventDefault();
+  });
+
+  form.addEventListener('submit', function (evt) {
+    window.load.uploadData(new FormData(form), onSuccess, onError);
+    imageEditingForm.classList.add('hidden');
+    resetForm();
+    evt.preventDefault();
+  });
+
+  var onSuccess = function () {
+    var successTemplate = document.querySelector('#success').content.querySelector('.success');
+    window.successNode = successTemplate.cloneNode(true);
+    window.main.appendChild(window.successNode);
+
+    var successButton = window.main.querySelector('.success__button');
+    successButton.addEventListener('click', function () {
+      window.successNode.remove();
+    });
+
+    document.addEventListener('keydown', function (evt) {
+      if (evt.keyCode === window.util.escKeydown) {
+        window.successNode.remove();
+      }
+    });
+  };
+
+  var onError = function (message) {
+    window.error.onError(message);
+
+    document.addEventListener('keydown', function (evt) {
+      if (evt.keyCode === window.util.escKeydown) {
+        window.errorNode.remove();
+      }
+    });
+
+    var errorButtons = window.main.querySelectorAll('.error__button');
+    errorButtons.addEventListener('click', function () {
+      window.errorNode.remove();
+    });
+  };
+
+  var resetForm = function () {
+    uploadFileInput.value = '';
+    setDefaultSettings();
+    hashtags.value = '';
+    descriptionElement.value = '';
+  };
+
 })();
